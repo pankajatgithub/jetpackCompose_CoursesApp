@@ -6,6 +6,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -38,6 +40,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.mycourses.ui.theme.MyCoursesTheme
 
 class MainActivity : ComponentActivity() {
@@ -46,14 +53,68 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             MyCoursesTheme {
-                Surface(modifier = Modifier.fillMaxSize()) {
-//                    HomeScreen()
+                //Transparent system bars
+
+                //Navigation system
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(MaterialTheme.colorScheme.background)
+                ) {
+
+                    //1- nav controller
+                    val navController = rememberNavController()
+
+                    //2 nav host
+                    NavHost(
+                        navController = navController,
+                        startDestination = "home"
+                    ) {
+                        //3- inside ,Nav Graph Builder
+                        //here from home we can go to details and about screen
+                        composable("home") {
+                            HomeScreen(onDetailsClick = { title ->
+                                navController.navigate("details/title = $title")
+                            }, onAboutClick = {
+                                navController.navigate("about")
+                            }
+
+                            )
+                        }
+
+
+                        composable("about") {
+                            AboutScreen(
+                                onNavigateUp = { navController.popBackStack() }
+                            )
+                        }
+
+                        composable(
+                            "details/title = {title}",
+                            arguments = listOf(
+                                navArgument("title") {
+                                    type = NavType.StringType
+                                    nullable = true
+                                }
+                            ),
+                        ) { backStackEntry ->
+                            val arguments = requireNotNull(backStackEntry.arguments)
+                            val title = arguments.getString("title")
+                            if (title != null) {
+                                DetailsScreen(title = title, onNavigateUp = {
+                                    navController.popBackStack()
+                                })
+                            }
+
+                        }
+                    }
 
                 }
             }
         }
     }
 }
+
 
 @Composable
 fun HomeScreen(
@@ -173,7 +234,7 @@ fun AppBar(title: String, onNavigateUp: () -> Unit) {
 }
 
 @Composable
-fun DetailsScreen(title: String, name: String?, onNavigateUp: () -> Unit) {
+fun DetailsScreen(title: String, onNavigateUp: () -> Unit) {
     val choosen_course = allCourses.first { it.title == title }
 
     Scaffold() { padding ->
