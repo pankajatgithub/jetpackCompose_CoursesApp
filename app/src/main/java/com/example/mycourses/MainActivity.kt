@@ -205,8 +205,10 @@ fun AboutScreen(onNavigateUp: () -> Unit) {
 
                 Spacer(modifier = Modifier.height(20.dp))
 
-                val udemy_link = LocalUriHandler.current
-                Button(onClick = { udemy_link.openUri("https://www.udemy.com/course/mastering-jetpack-compose/learn/lecture/38145166#overview") }) {
+                val uriHandler = LocalUriHandler.current
+                Button(onClick = { uriHandler.openUri(
+                    "https://www.udemy.com/course/mastering-jetpack-compose/learn/lecture/38145166#overview"
+                ) }) {
                     Text(text = "View Our Udemy ")
                 }
             }
@@ -237,8 +239,8 @@ fun AppBar(title: String, onNavigateUp: () -> Unit) {
 fun DetailsScreen(title: String, onNavigateUp: () -> Unit) {
     val choosen_course = allCourses.first { it.title == title }
 
-    Scaffold() { padding ->
-        Column(Modifier.padding(padding)) {
+    Scaffold() { paddingValues ->
+        Column(Modifier.padding(paddingValues)) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.padding(vertical = 10.dp)
@@ -250,22 +252,23 @@ fun DetailsScreen(title: String, onNavigateUp: () -> Unit) {
                     )
                 }
 
-                Image(
-                    painterResource(id = choosen_course.thumbnail), contentDescription = null,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .aspectRatio(16f / 9f),
-                    contentScale = ContentScale.Crop
-                )
-                Spacer(modifier = Modifier.height(20.dp))
-                Column(
-                    Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = 16.dp)
-                ) {
-                    Text(text = choosen_course.title, Modifier.fillMaxSize(), fontSize = 20.sp)
 
-                }
+
+            }
+            Image(
+                painterResource(id = choosen_course.thumbnail), contentDescription = null,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .aspectRatio(16f / 9f),
+                contentScale = ContentScale.Crop
+            )
+            Spacer(modifier = Modifier.height(20.dp))
+            Column(
+                Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp)
+            ) {
+                Text(text = choosen_course.title, Modifier.fillMaxSize(), fontSize = 20.sp)
 
             }
         }
